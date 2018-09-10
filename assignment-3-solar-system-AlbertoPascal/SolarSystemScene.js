@@ -48,17 +48,29 @@ function animate()
     Mars.rotation.y-= 1.5*angle/2;
     moveAround(Mars,20,current_angle,687) //tarda 687 días en dar la vuelta al sol
     Jupiter.rotation.y -=angle/2;
-    moveAround(Jupiter, 25, current_angle, 365*2.5); //tarda 11 años en dar una vuelta pero se pondrá a escala menor para que sea visualmente apreciable
+    moveAround(Jupiter, 30, current_angle, 365*2.5); //tarda 11 años en dar una vuelta pero se pondrá a escala menor para que sea visualmente apreciable
     Saturn.rotation.y -= angle/2;
-    moveAround(Saturn, -30, current_angle, 365*3);
+    moveAround(Saturn, -35, current_angle, 365*3);
     Uranus.rotation.y -=0.7*angle/2;
-    moveAround(Uranus,-35, current_angle, 365*4);
+    moveAround(Uranus,-40, current_angle, 365*4);
     Neptune.rotation.y -=0.8*angle/2;
-    moveAround(Neptune,40,current_angle,365*4.2);
+    moveAround(Neptune,44,current_angle,365*4.2);
 
+    SaturnMoon.rotation.y-=3*angle/2;
+    SaturnMoon2.rotation.y-=3*angle/2;
+    MarsMoon.rotation.y-=3*angle/2;
+    MarsMoon2.rotation.y-=3*angle/2;
+
+    moveAround(SaturnMoon, 3, current_angle, 15)
+    moveAround(SaturnMoon2, -3, current_angle, 15)
+
+    moveAround(MarsMoon, 1.5, current_angle, 15)
+    moveAround(MarsMoon2, -1.5, current_angle, 15)
     Pluto.rotation.y -=2*angle/2;
-    moveAround(Pluto, 45, current_angle, 365*5);
+    moveAround(Pluto, 50, current_angle, 365*5);
 
+   // Asteroids.rotation.y -=4*angle/2;
+   // moveAround(Asteroids,25, current_angle, 180);
     //rotateAndTranslate(EarthMoon, 2, 100,100,angle);
     //sphere.rotation.x += angle;
     //rotateAndTranslate(EarthMoon, 4, 100, 2600, 2);
@@ -93,7 +105,7 @@ function createSun()
 
     var texture = new THREE.TextureLoader().load("../images/sunbump.jpg");
     var bump = new THREE.TextureLoader().load("../images/sunbump.jpg");
-    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.10 });
+    var material = new THREE.MeshBasicMaterial({ map: texture, bumpMap: bump, bumpScale: 0.10 });
 
     // Create the sphere geometry
     geometry = new THREE.SphereGeometry(sun_radius, 20, 20);
@@ -122,7 +134,7 @@ function AddMoonToPlanet(moon_size, Planet, moon_positionX, moon_positionY, moon
     //console.log(moon.position);
     return LunasGroup;
 }
-function createPlanetWithMoons(size, position, material)
+function createPlanet(size, position, material)
 {
     var newPlanets = new THREE.Object3D;
     Planet_radius = size;
@@ -160,6 +172,53 @@ function addRings(System, radius)
     System.add(ring);
     ring.position.set(0,0,0,);
     return ring;
+}
+function createAsteroidBelt(Solar_System, mid_radius, min_radius, max_radius, geometry, material){
+    //I will consider my asteroid belt to be 
+    //I need to create many many small "planets" until y make it seem its full of small asteroids. 
+    num_asteroids = 100;
+    var AsteroidBelt = new THREE.Object3D;
+    var counter=0;
+    var segments=(2*Math.PI)/num_asteroids;
+    var current_angle=0;
+    var x=0, z=0;
+
+    while(num_asteroids>0)
+    {
+        var aster = new THREE.Mesh(geometry, material);
+        AsteroidBelt.add(aster);
+
+        if(counter%3 == 0)
+        {
+            x = max_radius * Math.sin(current_angle);
+            z= max_radius * Math.cos(current_angle);
+
+            aster.position.set(x,0,z);
+            current_angle+=segments;
+
+        }
+        else if(counter %3 ==1)
+        {
+            x = mid_radius * Math.sin(current_angle);
+            z= mid_radius * Math.cos(current_angle);
+
+            aster.position.set(x,0,z);
+            current_angle+=segments;
+
+        }
+        else
+        {
+            x = min_radius * Math.sin(current_angle);
+            z= min_radius * Math.cos(current_angle);
+
+            aster.position.set(x,0,z);
+            current_angle+=segments;
+
+        }
+        counter++;
+        num_asteroids--;
+    }
+    return AsteroidBelt;
 }
 function moveAround(System, orbit_radius, current_angle, days)
 {
@@ -204,17 +263,18 @@ function createScene(canvas)
     // Create a group to hold all the objects
     solarSystem = new THREE.Object3D;
     // Add a directional light to show off the objects
-    var light = new THREE.DirectionalLight( 0xffffff, 1.5);
-    var light2 = new THREE.DirectionalLight( 0xffffff, 1.5);
+    var light = new THREE.SpotLight(0xfff8d4, 1.5, 0, 2);
+    //var light = new THREE.DirectionalLight( 0xffffff, 1.5);
+    //var light2 = new THREE.DirectionalLight( 0xffffff, 1.5);
     // var light = new THREE.DirectionalLight( "rgb(255, 255, 100)", 1.5);
 
     // Position the light out from the scene, pointing at the origin
-    light.position.set(2, 2, 0);
-    light.target.position.set(0,0,0);
-    light2.position.set(-2, 2, 0);
-    light2.target.position.set(0,0,0);
+    light.position.set(0, 0, 0);
+    //light.target.position.set(0,0,0);
+    //light2.position.set(-2, 2, 0);
+    //light2.target.position.set(0,0,0);
     solarSystem.add(light);
-    solarSystem.add(light2);
+    //solarSystem.add(light2);
 
 
     var textureUrl = "../images/ash_uvgrid01.jpg";
@@ -245,7 +305,7 @@ function createScene(canvas)
     var bump = new THREE.TextureLoader().load("../images/earthbump1k.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
 
-    Earth = createPlanetWithMoons(1,-10, material);
+    Earth = createPlanet(1,-10, material);
 
 
     var texture = new THREE.TextureLoader().load("../images/moon_1024.jpg");
@@ -259,61 +319,87 @@ function createScene(canvas)
      var texture = new THREE.TextureLoader().load("../images/mercurymap.jpg");
     var bump = new THREE.TextureLoader().load("../images/mercurybump.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Mercury = createPlanetWithMoons(0.32,-6, material); //sólo un poco más grande que nuestra luna. 
+    Mercury = createPlanet(0.32,-6, material); //sólo un poco más grande que nuestra luna. 
     solarSystem.add(Mercury);
     solarSystem.add(drawOrbit(6));
 
     var texture = new THREE.TextureLoader().load("../images/venusmap.jpg");
     var bump = new THREE.TextureLoader().load("../images/venusbump.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Venus = createPlanetWithMoons(0.815 ,-10, material); //Venus tiene el 81.5% del tamaño de la tierra. 
+    Venus = createPlanet(0.815 ,-10, material); //Venus tiene el 81.5% del tamaño de la tierra. 
     solarSystem.add(Venus);
     solarSystem.add(drawOrbit(10));
 
     var texture = new THREE.TextureLoader().load("../images/marsmap1k.jpg");
     var bump = new THREE.TextureLoader().load("../images/marsbump1k.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Mars = createPlanetWithMoons(0.53, -20, material); //Marte es 53% el tamaño de la tierra
+    Mars = createPlanet(0.53, -20, material); //Marte es 53% el tamaño de la tierra
     solarSystem.add(Mars);
     solarSystem.add(drawOrbit(20));
+
+    var texture = new THREE.TextureLoader().load("../images/moon_1024.jpg");
+    var bump = new THREE.TextureLoader().load("../images/moon_bump.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+
+    MarsMoon= AddMoonToPlanet(0.27, Mars, 2 ,1,0, material); 
+    MarsMoon2= AddMoonToPlanet(0.27, Mars, -2 ,1,0, material);
+    /*
+
+        ENTRE ESTOS DOS DEBERÍA IR EL CINTURON DE ASTEROIDES!
+        
+
+    */
+    var texture = new THREE.TextureLoader().load("../images/aster.jpg");
+    var bump = new THREE.TextureLoader().load("../images/aster.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    geometry= new THREE.SphereGeometry(0.2, 20, 20);
+    var Asteroids = createAsteroidBelt(solarSystem, 25, 24, 25.5,geometry, material);
+    solarSystem.add(Asteroids);
 
     var texture = new THREE.TextureLoader().load("../images/jupitermap.jpg");
     var bump = new THREE.TextureLoader().load("../images/jupitermap.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.01 });
-    Jupiter = createPlanetWithMoons(2.33,-25, material);
+    Jupiter = createPlanet(2.33,-25, material);
     solarSystem.add(Jupiter);
-    solarSystem.add(drawOrbit(25));
+    solarSystem.add(drawOrbit(30));
 
     var texture = new THREE.TextureLoader().load("../images/saturnmap.jpg");
     var bump = new THREE.TextureLoader().load("../images/saturnmap.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Saturn = createPlanetWithMoons(1.95, -30, material); //    
+    Saturn = createPlanet(1.95, -30, material); //    
+
+    var texture = new THREE.TextureLoader().load("../images/moon_1024.jpg");
+    var bump = new THREE.TextureLoader().load("../images/moon_bump.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    SaturnMoon= AddMoonToPlanet(0.27, Saturn, 1,1,2, material); 
+    SaturnMoon2= AddMoonToPlanet(0.27, Saturn, 1,1,-2, material);  
+
     //ring= addRings(Saturn,2); 
     //Saturn.add(ring);
     solarSystem.add(Saturn);
-    solarSystem.add(drawOrbit(30));
+    solarSystem.add(drawOrbit(35));
 
     var texture = new THREE.TextureLoader().load("../images/uranusmap.jpg");
     var bump = new THREE.TextureLoader().load("../images/uranusmap.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Uranus = createPlanetWithMoons(1.45, -35, material); //    
+    Uranus = createPlanet(1.45, -35, material); //    
     solarSystem.add(Uranus);
-    solarSystem.add(drawOrbit(35))
+    solarSystem.add(drawOrbit(40))
 
 
     var texture = new THREE.TextureLoader().load("../images/neptunemap.jpg");
     var bump = new THREE.TextureLoader().load("../images/neptunemap.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Neptune = createPlanetWithMoons(1.40, 40, material); //    
+    Neptune = createPlanet(1.40, 40, material); //    
     solarSystem.add(Neptune);
-    solarSystem.add(drawOrbit(40))
+    solarSystem.add(drawOrbit(45))
 
      var texture = new THREE.TextureLoader().load("../images/plutomap1k.jpg");
     var bump = new THREE.TextureLoader().load("../images/plutobump1k.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
-    Pluto = createPlanetWithMoons(0.5, -45, material); //    
+    Pluto = createPlanet(0.5, -45, material); //    
     solarSystem.add(Pluto);
-    solarSystem.add(drawOrbit(45))
+    solarSystem.add(drawOrbit(50))
 
     /*sphereGroup = new THREE.Object3D;
     solarSystem.add(sphereGroup);
