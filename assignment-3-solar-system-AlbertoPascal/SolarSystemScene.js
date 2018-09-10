@@ -30,7 +30,7 @@ function animate()
     //sun.rotation.y += angle;
 
     // Rotate the sphere group about its Y axis
-    
+    solarSystem.rotation.y-=0.2*angle/2;
     //solarSystem.rotation.y -= angle/2;
     angular_velocity= velocity/sun_radius;
     Earth.rotation.y-=5*angle/2;
@@ -400,34 +400,5 @@ function createScene(canvas)
     Pluto = createPlanet(0.5, -45, material); //    
     solarSystem.add(Pluto);
     solarSystem.add(drawOrbit(50))
-
-    /*sphereGroup = new THREE.Object3D;
-    solarSystem.add(sphereGroup);
-    
-    // Move the sphere group up and back from the cube
-    sphereGroup.position.set(0, 0, -8);
-
-    // Create the sphere geometry
-    geometry = new THREE.SphereGeometry(0.5, 20, 20);
-    
-    // And put the geometry and material together into a mesh
-    sphere = new THREE.Mesh(geometry, material);
-
-    // Add the sphere mesh to our group
-    sphereGroup.add( sphere );
-
-    // Create the cone geometry
-    //geometry = new THREE.CylinderGeometry(0, .333, 1, 20, 5);
-    geometry = new THREE.SphereGeometry(0.2,100,100);
-    // And put the geometry and material together into a mesh
-    cone = new THREE.Mesh(geometry, material);
-
-    // Move the cone up and out from the sphere
-    cone.position.set(1.5, 1.5, -.667);
-        
-    // Add the cone mesh to our group
-    sphereGroup.add( cone ); */
-    
-    // Now add the group to our scene
     scene.add( solarSystem );
 }
