@@ -30,7 +30,7 @@ function animate()
     //sun.rotation.y += angle;
 
     // Rotate the sphere group about its Y axis
-    solarSystem.rotation.y-=0.2*angle/2;
+    solarSystem.rotation.y-=-0.05*angle/2;
     //solarSystem.rotation.y -= angle/2;
     angular_velocity= velocity/sun_radius;
     Earth.rotation.y-=5*angle/2;
