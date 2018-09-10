@@ -1,4 +1,4 @@
-var renderer = null,  //más planetas con sus órbitas. 
+var renderer = null,  //rotación de asteroides Lista
 scene = null, 
 camera = null,
 solarSystem = null,
