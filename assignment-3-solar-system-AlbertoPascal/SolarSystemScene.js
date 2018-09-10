@@ -48,9 +48,16 @@ function animate()
     Mars.rotation.y-= 1.5*angle/2;
     moveAround(Mars,20,current_angle,687) //tarda 687 días en dar la vuelta al sol
     Jupiter.rotation.y -=angle/2;
-    moveAround(Jupiter, 25, current_angle, 365*3); //tarda 11 años en dar una vuelta pero se pondrá a escala menor para que sea visualmente apreciable
+    moveAround(Jupiter, 25, current_angle, 365*2.5); //tarda 11 años en dar una vuelta pero se pondrá a escala menor para que sea visualmente apreciable
     Saturn.rotation.y -= angle/2;
-    moveAround(Saturn, -30, current_angle, 365*4);
+    moveAround(Saturn, -30, current_angle, 365*3);
+    Uranus.rotation.y -=0.7*angle/2;
+    moveAround(Uranus,-35, current_angle, 365*4);
+    Neptune.rotation.y -=0.8*angle/2;
+    moveAround(Neptune,40,current_angle,365*4.2);
+
+    Pluto.rotation.y -=2*angle/2;
+    moveAround(Pluto, 45, current_angle, 365*5);
 
     //rotateAndTranslate(EarthMoon, 2, 100,100,angle);
     //sphere.rotation.x += angle;
@@ -285,6 +292,28 @@ function createScene(canvas)
     //Saturn.add(ring);
     solarSystem.add(Saturn);
     solarSystem.add(drawOrbit(30));
+
+    var texture = new THREE.TextureLoader().load("../images/uranusmap.jpg");
+    var bump = new THREE.TextureLoader().load("../images/uranusmap.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    Uranus = createPlanetWithMoons(1.45, -35, material); //    
+    solarSystem.add(Uranus);
+    solarSystem.add(drawOrbit(35))
+
+
+    var texture = new THREE.TextureLoader().load("../images/neptunemap.jpg");
+    var bump = new THREE.TextureLoader().load("../images/neptunemap.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    Neptune = createPlanetWithMoons(1.40, 40, material); //    
+    solarSystem.add(Neptune);
+    solarSystem.add(drawOrbit(40))
+
+     var texture = new THREE.TextureLoader().load("../images/plutomap1k.jpg");
+    var bump = new THREE.TextureLoader().load("../images/plutobump1k.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    Pluto = createPlanetWithMoons(0.5, -45, material); //    
+    solarSystem.add(Pluto);
+    solarSystem.add(drawOrbit(45))
 
     /*sphereGroup = new THREE.Object3D;
     solarSystem.add(sphereGroup);
