@@ -1,4 +1,4 @@
-var renderer = null,  //prueba
+var renderer = null,  //más planetas con sus órbitas. 
 scene = null, 
 camera = null,
 solarSystem = null,
@@ -34,7 +34,7 @@ function animate()
     //solarSystem.rotation.y -= angle/2;
     angular_velocity= velocity/sun_radius;
     Earth.rotation.y-=5*angle/2;
-
+    sun.rotation.y-=0.5*angle/2;
     moveAround(Earth, 15, current_angle, 365); //tarda 365 días en dar la vuelta al sol
     moveAround(EarthMoon, 2, current_angle, 15) //tarda aproximadamente 27 días en dar la vuelta a la tierra pero con 15 se ve mejor
     current_angle++;
@@ -47,6 +47,11 @@ function animate()
     moveAround(Venus,10,current_angle, 225); //tarda 225 días en dar la vuelta al sol
     Mars.rotation.y-= 1.5*angle/2;
     moveAround(Mars,20,current_angle,687) //tarda 687 días en dar la vuelta al sol
+    Jupiter.rotation.y -=angle/2;
+    moveAround(Jupiter, 25, current_angle, 365*3); //tarda 11 años en dar una vuelta pero se pondrá a escala menor para que sea visualmente apreciable
+    Saturn.rotation.y -= angle/2;
+    moveAround(Saturn, -30, current_angle, 365*4);
+
     //rotateAndTranslate(EarthMoon, 2, 100,100,angle);
     //sphere.rotation.x += angle;
     //rotateAndTranslate(EarthMoon, 4, 100, 2600, 2);
@@ -137,11 +142,22 @@ function createPlanetWithMoons(size, position, material)
     return newPlanets;
 
 }
+
+function addRings(System, radius)
+{
+    var texture = new THREE.TextureLoader().load("../images/saturnringcolor.jpg");
+    var bump = new THREE.TextureLoader().load("../images/saturnringcolor.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    geometry = new THREE.CylinderGeometry(radius +1.2, radius +1.2, 0.01, 360 );
+    ring = new THREE.Mesh(geometry, material);
+    System.add(ring);
+    ring.position.set(0,0,0,);
+    return ring;
+}
 function moveAround(System, orbit_radius, current_angle, days)
 {
     var x=0;
     var y=0;
-
     //console.log("antes estaba en " + System.position.x);
 
     x = Math.sin(1/days * current_angle) * orbit_radius;
@@ -152,6 +168,16 @@ function moveAround(System, orbit_radius, current_angle, days)
     System.position.set(x,0,z);
     //      console.log("entré");
     current_angle++;
+}
+function drawOrbit(orbit_radius){
+    //(Sólo para este método: ) Esta parte del código fue investigada y utilizada de : https://threejs.org/docs/#api/en/geometries/CircleGeometry y 
+    //de https://www.w3resource.com/javascript-exercises/javascript-drawing-exercise-2.php
+    var geom  = new THREE.CircleGeometry(orbit_radius,90);
+    var mat= new THREE.MeshBasicMaterial({color:0xffffff});
+    var circle = new THREE.LineLoop( geom, mat);
+    geom.vertices.shift();
+    circle.rotation.x=Math.PI/2;
+    return circle;
 }
 function createScene(canvas)
 {    
@@ -176,9 +202,9 @@ function createScene(canvas)
     // var light = new THREE.DirectionalLight( "rgb(255, 255, 100)", 1.5);
 
     // Position the light out from the scene, pointing at the origin
-    light.position.set(1, 2, 0);
+    light.position.set(2, 2, 0);
     light.target.position.set(0,0,0);
-    light2.position.set(-1, 2, 0);
+    light2.position.set(-2, 2, 0);
     light2.target.position.set(0,0,0);
     solarSystem.add(light);
     solarSystem.add(light2);
@@ -214,6 +240,7 @@ function createScene(canvas)
 
     Earth = createPlanetWithMoons(1,-10, material);
 
+
     var texture = new THREE.TextureLoader().load("../images/moon_1024.jpg");
     var bump = new THREE.TextureLoader().load("../images/moon_bump.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
@@ -221,29 +248,43 @@ function createScene(canvas)
 
     EarthMoon= AddMoonToPlanet(0.27, Earth, 1,1,-1.5, material); //nuestra luna es de tamaño de 27% el de la tierra. 
     solarSystem.add(Earth);
+    solarSystem.add(drawOrbit(15));
      var texture = new THREE.TextureLoader().load("../images/mercurymap.jpg");
     var bump = new THREE.TextureLoader().load("../images/mercurybump.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
     Mercury = createPlanetWithMoons(0.32,-6, material); //sólo un poco más grande que nuestra luna. 
     solarSystem.add(Mercury);
-
+    solarSystem.add(drawOrbit(6));
 
     var texture = new THREE.TextureLoader().load("../images/venusmap.jpg");
     var bump = new THREE.TextureLoader().load("../images/venusbump.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
     Venus = createPlanetWithMoons(0.815 ,-10, material); //Venus tiene el 81.5% del tamaño de la tierra. 
     solarSystem.add(Venus);
+    solarSystem.add(drawOrbit(10));
 
     var texture = new THREE.TextureLoader().load("../images/marsmap1k.jpg");
     var bump = new THREE.TextureLoader().load("../images/marsbump1k.jpg");
     var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
     Mars = createPlanetWithMoons(0.53, -20, material); //Marte es 53% el tamaño de la tierra
-
-
     solarSystem.add(Mars);
+    solarSystem.add(drawOrbit(20));
 
+    var texture = new THREE.TextureLoader().load("../images/jupitermap.jpg");
+    var bump = new THREE.TextureLoader().load("../images/jupitermap.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.01 });
+    Jupiter = createPlanetWithMoons(2.33,-25, material);
+    solarSystem.add(Jupiter);
+    solarSystem.add(drawOrbit(25));
 
-
+    var texture = new THREE.TextureLoader().load("../images/saturnmap.jpg");
+    var bump = new THREE.TextureLoader().load("../images/saturnmap.jpg");
+    var material = new THREE.MeshPhongMaterial({ map: texture, bumpMap: bump, bumpScale: 0.05 });
+    Saturn = createPlanetWithMoons(1.95, -30, material); //    
+    //ring= addRings(Saturn,2); 
+    //Saturn.add(ring);
+    solarSystem.add(Saturn);
+    solarSystem.add(drawOrbit(30));
 
     /*sphereGroup = new THREE.Object3D;
     solarSystem.add(sphereGroup);
